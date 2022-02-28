@@ -45,9 +45,67 @@ var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+//////////////////////////////////
+// replaces p element with textarea
+$(".list-group").on("click", "p", function(){
+  var text = $(this).text().trim();
+  var textInput = $("<textarea>").addClass("form-control").val(text);
+  $(this).replaceWith(textInput);
+  textInput.trigger("focus");
+});
+
+// obtains textarea text info, gets id for status, gets index for array
+// replaces text area with p element using same text
+$(".list-group").on("blur", "textarea", function(){
+  // gets text area's current value/text
+  var text = $(this).val().trim();
+  // gets parent ul id attribute
+  var status = $(this).closest(".list-group").attr("id").replace("list-", "");
+  // get tasks position in list
+  var index = $(this).closest("list-group-item").index();
+  tasks[status][index].text = text;
+  saveTasks();
+  // recreate p element
+  var taskP = $("<p>").addClass("m-1").text(text);
+  // replace textarea with p element
+  $(this).replaceWith(taskP);
+});
+////////////////////////////////////////////
+
+//add an event listener to date area
+// we use event delegation to target parent .list-group
+/* we tell the event listener to wait for a click on any 
+element that is a child of the parent, when it does,
+we call an anonymous function */
+$(".list-group").on("click", "span", function() {
+  // gets date info
+  var date = $(this).text().trim();
+  // create new input element
+  var dateInput = $("<input>").attr("type", "text").addClass("form-control").val(date);
+  // swap out elements
+  $(this).replaceWith(dateInput);
+  // focus on new element
+  dateInput.trigger("focus");
+});
+// change date value
+$(".list-group").on("blur", "input[type='text']", function(){
+  // gets current text
+  var date = $(this).val().trim();
+  // get parent ul id attribute
+  var status = $(this).closest(".list-group").attr("id").replace("list-", "");
+  // get task's position in list
+  var index = $(this).closest(".list-group-item").index();
+  // updates task in array and re-saves to localStorage
+  tasks[status][index].date = date;
+  saveTasks();
+  // recreate span element with bootstrap classes
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(date);
+  // replace input with span element
+  $(this).replaceWith(taskSpan);
+});
 
 
-
+////////////////////////////////////////////
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
   // clear values
