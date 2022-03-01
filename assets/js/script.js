@@ -44,6 +44,64 @@ var loadTasks = function() {
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+/////////////////////////////////////////
+/* this expression is part of jQuery UI to implement
+list sorting/order with drag/drop functionality */
+/* sortable() turned elements with class .list-group 
+into sortable list */
+/* connectWith property links sortable lists to other 
+lists with same class */
+// sortable() is considered a widget
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  /* we work with clone of element so click events dont
+  accidentally get triggered */
+  helper: "clone",
+  // event listener, triggers when dragging starts
+  activate: function(event) {
+    console.log("activate", this);
+  },
+  // event listener, triggers when dragging stops
+  deactivate: function(event) {
+    console.log("deactivate", this);
+  },
+  // event listener, triggers when dragged item enters list
+  over: function(event) {
+    console.log("over", event.target);
+  },
+  // event listener, triggers when dragged item exits list
+  out: function(event) {
+    console.log("out", event.target);
+  },
+  // triggers when contents of a list has changed
+  // this involves re-saving tasks in localStorage
+  update: function(event) {
+    // we need to create an array to store task data
+    // this is so the data can be moved from one column to another
+    var tempArr = []
+    // loop over current set of children in sortable list
+    $(this).children().each(function() {
+      var text = $(this).find("p").text().trim();
+      var date = $(this).find("span").text().trim();
+      // in this expression, this refers to child element
+      // remember: scoped variables!
+    });
+    // we must determine column id so we can 
+    // attach correct property to new object
+    var arrName = $(this).attr("id").replace("list-", "");
+    // updates array
+    tasks[arrName] = tempArrr;
+    saveTasks();
+    // adds task data to the temp array as an object
+    tempArr.push({
+      text: text,
+      date: date
+    });
+  }
+});
+
 
 //////////////////////////////////
 // replaces p element with textarea
@@ -75,8 +133,8 @@ $(".list-group").on("blur", "textarea", function(){
 //add an event listener to date area
 // we use event delegation to target parent .list-group
 /* we tell the event listener to wait for a click on any 
-element that is a child of the parent, when it does,
-we call an anonymous function */
+element that is a child of the parent with class .list-group, 
+when it does we call an anonymous function */
 $(".list-group").on("click", "span", function() {
   // gets date info
   var date = $(this).text().trim();
