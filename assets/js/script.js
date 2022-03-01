@@ -88,19 +88,21 @@ $(".card .list-group").sortable({
   helper: "clone",
   // event listener, triggers when dragging starts
   activate: function(event) {
-    console.log("activate", this);
+    $(this).addClass(".dropover");
+    $(".bottom-trash").addClass(".bottom-trash-drag");
   },
   // event listener, triggers when dragging stops
   deactivate: function(event) {
-    console.log("deactivate", this);
+    $(this).removeClass(".dropover");
+    $(".bottom-trash").removeClass(".bottom-trash-drag");
   },
   // event listener, triggers when dragged item enters list
   over: function(event) {
-    console.log("over", event.target);
+    $(event.target).addClass(".dropover-active");
   },
   // event listener, triggers when dragged item exits list
   out: function(event) {
-    console.log("out", event.target);
+    $(event.target).removeClass(".dropover-active");
   },
   // triggers when contents of a list has changed
   // this involves re-saving tasks in localStorage
@@ -119,7 +121,7 @@ $(".card .list-group").sortable({
     // attach correct property to new object
     var arrName = $(this).attr("id").replace("list-", "");
     // updates array
-    tasks[arrName] = tempArrr;
+    tasks[arrName] = tempArr;
     saveTasks();
     // adds task data to the temp array as an object
     tempArr.push({
@@ -137,15 +139,15 @@ $("#trash").droppable( {
   tolerance: "touch",
   // ui parameter specifies task we want to drop
   drop: function(event, ui) {
-    console.log("drop");
     // if something is draggable, allow it to be removed
     ui.draggable.remove();
+    $(".bottom-trash").removeClass(".bottom-trash-active");
   },
   over: function(event, ui) {
-    console.log("over");
+    $(".bottom-trash").addClass(".bottom-trash-active");
   },
   out: function(event, ui) {
-    console.log("out");
+    $(".bottom-trash").removeClass(".bottom-trash-active");
   }
 });
 
@@ -254,7 +256,7 @@ $("#task-form-modal").on("shown.bs.modal", function() {
 });
 
 // save button in modal was clicked
-$("#task-form-modal .btn-primary").click(function() {
+$("#task-form-modal .btn-save").click(function() {
   // get form values
   var taskText = $("#modalTaskDescription").val();
   var taskDate = $("#modalDueDate").val();
@@ -287,4 +289,17 @@ $("#remove-tasks").on("click", function() {
 // load tasks for the first time
 loadTasks();
 
+/////////////////////////////////////////////////////
 
+/* we want our audit task function to run even without
+the page being refreshed, to accomplish this we will
+use a setInterval function (as oppossed to setTimeout)
+which will only run once unless page refreshes */
+
+setInterval(function() {
+  $(".card .list-group-item").each(function(index, el) {
+    auditTask(el);
+  });
+  // 1800000 is 30 minutes in milliseconds
+  // or we can put }, (1000*60)*30);
+}, 1800000);
