@@ -1,5 +1,28 @@
 var tasks = {};
+////////////////////////////////////////////
 
+// we will add a new function, auditTask, for implementing
+// moment.js into task dates for better organization
+var auditTask = function(taskEl) {
+  // get date from task element
+  var date = $(taskEl).find("span").text().trim();
+  // convert date to moment object, sets it to 5pm
+  var time = moment(date, "L").set("hour", 17);
+  // remove old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
+  // apply new class if task is near/over due date
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger");
+  }
+  else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning");
+  }
+  // now we must update eventlistener 'change' for editing
+  // due date, 
+};
+
+
+///////////////////////////////////////////////////////
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
@@ -13,11 +36,14 @@ var createTask = function(taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  // new expression for checking due date
+  auditTask(taskLi);
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
 };
 
+/////////////////////////////////////////////////////
 var loadTasks = function() {
   tasks = JSON.parse(localStorage.getItem("tasks"));
 
@@ -41,6 +67,7 @@ var loadTasks = function() {
   });
 };
 
+//////////////////////////////////////////////////////////
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
@@ -161,11 +188,25 @@ $(".list-group").on("click", "span", function() {
   var dateInput = $("<input>").attr("type", "text").addClass("form-control").val(date);
   // swap out elements
   $(this).replaceWith(dateInput);
+  // we will add a date picker when span is clicked
+  dateInput.datepicker( {
+    // we have again passed an object through datepicker
+    // method, this has key value pair and limits
+    // user from selecting dates that have passed
+    minDate: 1,
+    // we must force a 'change' event if datepicker is
+    // closed with no selection, revert to former date
+    onClose: function() {
+      $(this).trigger("change");
+    }
+  });
   // focus on new element
   dateInput.trigger("focus");
 });
 // change date value
-$(".list-group").on("blur", "input[type='text']", function(){
+// instead of 'blur' we will use 'change' with the
+// added datepicker to save our changes
+$(".list-group").on("change", "input[type='text']", function(){
   // gets current text
   var date = $(this).val().trim();
   // get parent ul id attribute
@@ -179,10 +220,27 @@ $(".list-group").on("blur", "input[type='text']", function(){
   var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(date);
   // replace input with span element
   $(this).replaceWith(taskSpan);
+  // this will pass li element into auditTask() to 
+  // assess the new due date
+  auditTask($(taskSpan).closest(".list-group-item"));
+});
+////////////////////////////////////////////////////
+
+// we will implement datepicker via jQuery UI
+$("#modalDueDate").datepicker({
+  // we want to avoid user picking a date that has passed
+  // we will add minDate option to datepicker method
+  // we have passed an object through the datepicker()
+  // 1 means 1 day away from current date 
+  minDate: 1
 });
 
+// we have the datepicker for the modal form, but 
+// what about when we're editing our current tasks?
+// we must add code to our click event listener for due date
 
-////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
   // clear values
