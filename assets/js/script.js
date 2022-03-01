@@ -101,7 +101,26 @@ $(".card .list-group").sortable({
     });
   }
 });
+///////////////////////////////////////////////////////
 
+// these expression will implement the droppable widget
+// we can drop elements into the drag here to remove area
+$("#trash").droppable( {
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  // ui parameter specifies task we want to drop
+  drop: function(event, ui) {
+    console.log("drop");
+    // if something is draggable, allow it to be removed
+    ui.draggable.remove();
+  },
+  over: function(event, ui) {
+    console.log("over");
+  },
+  out: function(event, ui) {
+    console.log("out");
+  }
+});
 
 //////////////////////////////////
 // replaces p element with textarea
