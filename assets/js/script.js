@@ -68,10 +68,15 @@ var loadTasks = function() {
 };
 
 //////////////////////////////////////////////////////////
+
+
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+
+
 /////////////////////////////////////////
+
 /* this expression is part of jQuery UI to implement
 list sorting/order with drag/drop functionality */
 /* sortable() turned elements with class .list-group 
@@ -88,21 +93,21 @@ $(".card .list-group").sortable({
   helper: "clone",
   // event listener, triggers when dragging starts
   activate: function(event) {
-    $(this).addClass(".dropover");
-    $(".bottom-trash").addClass(".bottom-trash-drag");
+    $(this).addClass("dropover");
+    $(".bottom-trash").addClass("bottom-trash-drag");
   },
   // event listener, triggers when dragging stops
   deactivate: function(event) {
-    $(this).removeClass(".dropover");
-    $(".bottom-trash").removeClass(".bottom-trash-drag");
+    $(this).removeClass("dropover");
+    $(".bottom-trash").removeClass("bottom-trash-drag");
   },
   // event listener, triggers when dragged item enters list
   over: function(event) {
-    $(event.target).addClass(".dropover-active");
+    $(event.target).addClass("dropover-active");
   },
   // event listener, triggers when dragged item exits list
   out: function(event) {
-    $(event.target).removeClass(".dropover-active");
+    $(event.target).removeClass("dropover-active");
   },
   // triggers when contents of a list has changed
   // this involves re-saving tasks in localStorage
@@ -130,6 +135,9 @@ $(".card .list-group").sortable({
     });
   }
 });
+
+
+
 ///////////////////////////////////////////////////////
 
 // these expression will implement the droppable widget
@@ -141,13 +149,13 @@ $("#trash").droppable( {
   drop: function(event, ui) {
     // if something is draggable, allow it to be removed
     ui.draggable.remove();
-    $(".bottom-trash").removeClass(".bottom-trash-active");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   },
   over: function(event, ui) {
-    $(".bottom-trash").addClass(".bottom-trash-active");
+    $(".bottom-trash").addClass("bottom-trash-active");
   },
   out: function(event, ui) {
-    $(".bottom-trash").removeClass(".bottom-trash-active");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
 });
 
